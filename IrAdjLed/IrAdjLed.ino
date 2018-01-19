@@ -5,7 +5,7 @@
 //
 
 #include <Arduino.h>
-#include <eeprom.h>
+#include <EEPROM.h>
 #include <AL_LeonardoRxTxLed.h>
 #include "IrController.h"
 
@@ -98,6 +98,9 @@ void dbg_printLevel(char leading) {
 
 void loadSavedPwmLevel() {
 	byte savedLevel = EEPROM.read(ROM_ADDR_PWM_LEVEL);
+	if (savedLevel >= NUM_PWM_LEVEL) {
+		savedLevel = 0;
+	}
 	setLevel(savedLevel);
 }
 
