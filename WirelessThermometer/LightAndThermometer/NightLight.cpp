@@ -11,7 +11,7 @@ static const byte presetValues[] = {
 #define NUM_PWM_LEVEL (sizeof(presetValues)/sizeof(presetValues[0]))
 #define ROM_ADDR_PWM_LEVEL 0
 
-#define FORCE_SEND_INTERVAL 1533
+#define FORCE_SEND_INTERVAL 1433
 
 //
 // Utilities

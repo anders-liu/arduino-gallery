@@ -1,7 +1,6 @@
 #include "IrController.h"
 
-#define KEY_UP_THRESHOLD 200
-#define DEBOUNCE_COUNT 1
+#define KEY_UP_THRESHOLD 320
 
 IrKey getKey(decode_type_t type, unsigned long value) {
 	switch (type) {
@@ -52,24 +51,14 @@ void IrController::loop() {
 	if (millis() - lastMillis > KEY_UP_THRESHOLD) {
 		if (lastFiredKey != IRKEY_UNKNOWN) {
 			onKeyUp(lastFiredKey);
+			lastFiredKey = IRKEY_UNKNOWN;
 		}
 	}
 
 	if (irRecv.decode(&result)) {
-		if (result.decode_type == lastCodeType && result.value == lastCodeValue) {
-			debounceCount++;
-			if (debounceCount >= DEBOUNCE_COUNT) {
-				debounceCount = 0;
-
-				IrKey key = getKey(lastCodeType, lastCodeValue);
-				if (key != IRKEY_UNKNOWN) {
-					onKeyDown(key);
-				}
-			}
-		}
-		else {
-			lastCodeType = result.decode_type;
-			lastCodeValue = result.value;
+		IrKey key = getKey(result.decode_type, result.value);
+		if (key != IRKEY_UNKNOWN) {
+			onKeyDown(key);
 		}
 
 		lastMillis = millis();

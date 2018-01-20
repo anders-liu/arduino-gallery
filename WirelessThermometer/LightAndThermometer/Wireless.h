@@ -36,7 +36,7 @@ public:
 private:
 	void loopSendThermometerData();
 	void loopSendLightData();
-	void send(WLM *msg);
+	bool send(WLM *msg);
 	void loopReceive();
 	void loopTimeoutCheck();
 
@@ -46,4 +46,10 @@ private:
 	byte *txAddr;
 	byte *rxAddr;
 	uint32_t lastTimeoutCheckMillis = 0;
+
+	uint32_t lastThermometerSendMillis = 0;
+	uint8_t retryThermometerSendCount = 0;
+
+	uint32_t lastLightDataSendMillis = 0;
+	uint32_t retryLightDataSendCount = 0;
 };

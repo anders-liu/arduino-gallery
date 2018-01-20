@@ -1,6 +1,6 @@
 #include "Sensor.h"
 
-#define UPDATE_INTERVAL 4000
+#define UPDATE_INTERVAL 4147
 
 void Sensor::loop() {
 	uint32_t ms = millis();

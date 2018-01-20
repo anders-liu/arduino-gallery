@@ -1,42 +1,60 @@
 #include "Wireless.h"
 
 #define MAX_PAYLOAD 32
-#define TIMEOUT_CHECK_INTERVAL 1500
-#define RTC_TIMEOUT 1500
+#define TIMEOUT_CHECK_INTERVAL 1553
+#define RTC_TIMEOUT 2200
+#define RETRY_INTERVAL 77
+
+#define SEND_WITH_RETRY(signal, msg, last, count) do { \
+	if(send(&msg)) { \
+		signal = 0; \
+		ds.setWirelessState(S_WL_OK); \
+		count = 0; \
+	} \
+	else { \
+		count++; \
+		if (count >= 5) { \
+			signal = 0; \
+			ds.setWirelessState(S_WL_NOSIGNAL); \
+			count = 0; \
+		} \
+	} \
+	last = millis(); \
+} while(0)
+
+#define NEED_SEND(signal, last, count) ( \
+	(signal) || ((count) > 0 && ((millis() - (last)) > RETRY_INTERVAL)) \
+)
 
 void Wireless::loopSendThermometerData() {
-	if (ds.f.sensorValueReadyToSend) {
-		ds.f.sensorValueReadyToSend = 0;
-
+	if (NEED_SEND(ds.f.sensorValueReadyToSend, lastThermometerSendMillis, retryThermometerSendCount)) {
 		WLM_R2C_THERMOMETER msg(ds.sensorResult, ds.temperature, ds.humidity);
-		send(&msg);
+		SEND_WITH_RETRY(ds.f.sensorValueReadyToSend, msg, lastThermometerSendMillis, retryThermometerSendCount);
 	}
 }
 
 void Wireless::loopSendLightData() {
-	if (ds.f.lightValueReadyToSend) {
-		ds.f.lightValueReadyToSend = 0;
-
+	if (NEED_SEND(ds.f.lightValueReadyToSend, lastLightDataSendMillis, retryLightDataSendCount)) {
 		WLM_R2C_LIGHT msg(ds.lightIsOn, ds.lightLevel, ds.lightPercentage);
-		send(&msg);
+		SEND_WITH_RETRY(ds.f.lightValueReadyToSend, msg, lastLightDataSendMillis, retryLightDataSendCount);
 	}
 }
 
-void Wireless::send(WLM * msg) {
+bool Wireless::send(WLM * msg) {
 	if (!radio.isChipConnected()) {
 		ds.setWirelessState(S_WL_NOCHIP);
-		return;
+		return false;
 	}
 
 	radio.stopListening();
-	if (radio.write(msg, msg->size)) {
-		ds.setWirelessState(S_WL_OK);
-	}
-	else {
-		radio.flush_tx();
-		ds.setWirelessState(S_WL_NOSIGNAL);
-	}
+	bool r = radio.write(msg, msg->size);
 	radio.startListening();
+
+	if (!r) {
+		radio.flush_tx();
+	}
+
+	return r;
 }
 
 void Wireless::loopReceive() {

@@ -20,9 +20,6 @@ public:
 		, keyDownHandler(nullptr)
 		, keyUpHandler(nullptr)
 		, lastMillis(0)
-		, debounceCount(0)
-		, lastCodeType(UNKNOWN)
-		, lastCodeValue(0)
 		, lastFiredKey(IRKEY_UNKNOWN) {
 	}
 
@@ -40,9 +37,6 @@ private:
 	IrKeyEventHandler keyDownHandler;
 	IrKeyEventHandler keyUpHandler;
 	unsigned long lastMillis;
-	byte debounceCount;
-	decode_type_t lastCodeType;
-	unsigned long lastCodeValue;
 	IrKey lastFiredKey;
 
 	void onKeyDown(IrKey key) { lastFiredKey = key; if (keyDownHandler) keyDownHandler(key); }
