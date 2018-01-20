@@ -107,12 +107,9 @@ void Wireless::loopSendRtc() {
 		ds.rtcYear, ds.rtcMonth, ds.rtcDay, ds.rtcWeekday,
 		ds.rtcHour, ds.rtcMinute, ds.rtcSecond, false, false);
 
-	rf.stopListening();
 	for (uint8_t i = 0; i < WL_MAX_REMOTE; i++) {
-		rf.openWritingPipe(TX_ADDR(i));
-		rf.write(&msg, sizeof(msg));
+		send(i, &msg);
 	}
-	rf.startListening();
 }
 
 void Wireless::loopSendLightControl() {
@@ -122,19 +119,21 @@ void Wireless::loopSendLightControl() {
 		if (cd.f.lightPowerControlReadyToSend) {
 			cd.f.lightPowerControlReadyToSend = 0;
 			WLM_C2R_LIGHT_POWER powerMsg(cd.lightControlIsOn);
-			rf.stopListening();
-			rf.openWritingPipe(TX_ADDR(i));
-			rf.write(&powerMsg, sizeof(powerMsg));
-			rf.startListening();
+			send(i, &powerMsg);
 		}
 
 		if (cd.f.lightLevelControlReadyToSend) {
 			cd.f.lightLevelControlReadyToSend = 0;
 			WLM_C2R_LIGHT_LEVEL levelMsg(cd.lightControlLevel);
-			rf.stopListening();
-			rf.openWritingPipe(TX_ADDR(i));
-			rf.write(&levelMsg, sizeof(levelMsg));
-			rf.startListening();
+			send(i, &levelMsg);
 		}
 	}
+}
+
+bool Wireless::send(uint8_t channel, WLM * pMsg) {
+	rf.stopListening();
+	rf.openWritingPipe(TX_ADDR(channel));
+	bool r = rf.write(pMsg, pMsg->size);
+	rf.startListening();
+	return r;
 }

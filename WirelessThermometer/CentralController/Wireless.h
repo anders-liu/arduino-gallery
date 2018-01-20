@@ -34,6 +34,8 @@ private:
 	void loopSendRtc();
 	void loopSendLightControl();
 
+	bool send(uint8_t channel, WLM *pMsg);
+
 private:
 	RF24 rf;
 	const byte channel;
