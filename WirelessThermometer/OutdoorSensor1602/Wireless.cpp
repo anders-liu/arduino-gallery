@@ -1,11 +1,13 @@
 #include "Wireless.h"
 
 #define MAX_PAYLOAD 32
+#define RETRY_INTERVAL 77
 #define TIMEOUT_CHECK_INTERVAL 1500
 #define RTC_TIMEOUT 1500
 
 void Wireless::loopSendThermometerData() {
 	if (!ds.f.sensorValueReadyToSend) return;
+	if (failedCount > 0 && millis() - lastSendMillis < RETRY_INTERVAL) return;
 	if (!radio.isChipConnected()) {
 		ds.setWirelessState(S_WL_NOCHIP);
 		return;
@@ -14,15 +16,23 @@ void Wireless::loopSendThermometerData() {
 	WLM_R2C_THERMOMETER msg(ds.sensorResult, ds.temperature, ds.humidity);
 	radio.stopListening();
 	if (radio.write(&msg, sizeof(msg))) {
+		ds.f.sensorValueReadyToSend = 0;
 		ds.setWirelessState(S_WL_OK);
+		failedCount = 0;
 	}
 	else {
 		radio.flush_tx();
-		ds.setWirelessState(S_WL_NOSIGNAL);
+		failedCount++;
+
+		if (failedCount >= 5) {
+			ds.f.sensorValueReadyToSend = 0;
+			ds.setWirelessState(S_WL_NOSIGNAL);
+			failedCount = 0;
+		}
 	}
 	radio.startListening();
 
-	ds.f.sensorValueReadyToSend = 0;
+	lastSendMillis = millis();
 }
 
 void Wireless::loopReceive() {

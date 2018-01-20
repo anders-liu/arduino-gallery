@@ -43,4 +43,7 @@ private:
 	byte *txAddr;
 	byte *rxAddr;
 	uint32_t lastTimeoutCheckMillis = 0;
+
+	uint32_t lastSendMillis = 0;
+	uint8_t failedCount = 0;
 };
