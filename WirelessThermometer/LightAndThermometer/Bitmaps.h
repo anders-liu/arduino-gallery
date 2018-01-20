@@ -59,7 +59,7 @@ extern const unsigned char PROGMEM BMP24X32_DEG[];
 #define BMP8X16_7_ACTUAL_W           ((uint8_t)7)
 #define BMP8X16_8_ACTUAL_W           ((uint8_t)7)
 #define BMP8X16_9_ACTUAL_W           ((uint8_t)7)
-#define BMP8X16_COLON_ACTUAL_W       ((uint8_t)3)
+#define BMP8X16_COLON_ACTUAL_W       ((uint8_t)5)
 #define BMP8X16_DASH_ACTUAL_W        ((uint8_t)7)
 
 #define BMP16X16_A_ACTUAL_W          ((uint8_t)11)

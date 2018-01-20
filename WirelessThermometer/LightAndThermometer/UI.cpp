@@ -168,8 +168,8 @@ static void drawText16(const Adafruit_SSD1306 &d, uint8_t x, uint8_t y, const ch
 			x += BMP16X16_SPACING + BMP8X16_9_ACTUAL_W;
 			break;
 		case ':':
-			d.drawPixel(x + 1, y + 1, WHITE);
-			d.drawPixel(x + 1, y + 9, WHITE);
+			d.drawPixel(x + 2, y + 1, WHITE);
+			d.drawPixel(x + 2, y + 9, WHITE);
 			x += BMP16X16_SPACING + BMP8X16_COLON_ACTUAL_W;
 			break;
 		case '-':

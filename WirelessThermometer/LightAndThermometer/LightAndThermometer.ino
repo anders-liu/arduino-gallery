@@ -52,17 +52,27 @@
 
 #define WL_CHANNEL 6
 
+#define REMOTE_ID 1
+
 // From central controller.
 //static const byte rxPipeAddr[] = { 0xC3, 0xDB, 0xBD, 0xEC, 0xCE };  // For remmote A, Outdoor.
+#if REMOTE_ID == 1
 static const byte rxPipeAddr[] = { 0x66, 0xDB, 0xBD, 0xEC, 0xCE };  // For remmote B, room 1.
-//static const byte rxPipeAddr[] = { 0x3C, 0xDB, 0xBD, 0xEC, 0xCE };  // For remmote C, room 2.
-//static const byte rxPipeAddr[] = { 0x99, 0xDB, 0xBD, 0xEC, 0xCE };  // For remmote D, room 3.
+#elif REMOTE_ID == 2
+static const byte rxPipeAddr[] = { 0x3C, 0xDB, 0xBD, 0xEC, 0xCE };  // For remmote C, room 2.
+#elif REMOTE_ID == 3
+static const byte rxPipeAddr[] = { 0x99, 0xDB, 0xBD, 0xEC, 0xCE };  // For remmote D, room 3.
+#endif
 
 // To one of central controller rx pipes.
 //static const byte txPipeAddr[] = { 0xC3, 0xCE, 0xEC, 0xBD, 0xDB };  // For remmote A, Outdoor.
+#if REMOTE_ID == 1
 static const byte txPipeAddr[] = { 0x66, 0xCE, 0xEC, 0xBD, 0xDB };  // For remmote B, room 1.
-//static const byte txPipeAddr[] = { 0x3C, 0xCE, 0xEC, 0xBD, 0xDB };  // For remmote C, room 2.
-//static const byte txPipeAddr[] = { 0x99, 0xCE, 0xEC, 0xBD, 0xDB };  // For remmote D, room 3.
+#elif REMOTE_ID == 2
+static const byte txPipeAddr[] = { 0x3C, 0xCE, 0xEC, 0xBD, 0xDB };  // For remmote C, room 2.
+#elif REMOTE_ID == 3
+static const byte txPipeAddr[] = { 0x99, 0xCE, 0xEC, 0xBD, 0xDB };  // For remmote D, room 3.
+#endif
 
 //
 // Modules

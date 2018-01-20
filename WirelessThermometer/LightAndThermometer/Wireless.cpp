@@ -13,7 +13,7 @@
 	} \
 	else { \
 		count++; \
-		if (count >= 5) { \
+		if (ds.wirelessState != S_WL_NOCHIP && count >= 5) { \
 			signal = 0; \
 			ds.setWirelessState(S_WL_NOSIGNAL); \
 			count = 0; \
