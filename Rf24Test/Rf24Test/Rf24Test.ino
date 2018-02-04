@@ -11,12 +11,19 @@
 
 #define DYNAMIC_PAYLOAD 1
 
-#if 0
+#define BOARD_SETTING 1
+
+#if BOARD_SETTING == 1
 #define RF_CE  6
 #define RF_CSN 8
-#else
+#elif BOARD_SETTING == 2
 #define RF_CE  A0
 #define RF_CSN A1
+#elif BOARD_SETTING == 3
+#define RF_CE  22
+#define RF_CSN 21
+#else
+#error Must setup BOARD_SETTING
 #endif
 
 RF24 rf(RF_CE, RF_CSN);
@@ -66,6 +73,10 @@ void setup() {
 }
 
 void loop() {
+	if (!rf.isChipConnected()) {
+		Serial.println("NO CHIP");
+	}
+
 	if (role == ROLE_TX) {
 		uint32_t ms = millis();
 		if (ms - lastSendMillis > SEND_INTERVAL) {
