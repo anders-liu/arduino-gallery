@@ -65,7 +65,9 @@ void setup() {
 	Serial.begin(115200);
 	Serial1.begin(115200);
 
-	ui.setup(0, 0);
+	uint16_t sec = eeprom_read_word(EEPROM_ADDR_SEC);
+	uint16_t pg = eeprom_read_word(EEPROM_ADDR_PG);
+	ui.setup(sec, pg);
 
 	btnR.handleKeyDown(onRKeyDown);
 	btnR.handleKeyUp(onRKeyUp);
@@ -77,7 +79,7 @@ void setup() {
 }
 
 void loop() {
-//	pm.loop();
+	//	pm.loop();
 	btnR.loop();
 	btnL.loop();
 	ui.loop();

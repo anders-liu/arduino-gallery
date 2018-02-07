@@ -31,8 +31,8 @@ public:
 		epd.startSetStorageSD();
 		delay(500);
 
-		curSec = secID;
-		curPg = pgID;
+		curSec = secID > 99 ? 0 : secID;
+		curPg = pgID > 999 ? 0 : pgID;
 		display();
 		delay(1500);
 		epd.startRefresh();
@@ -71,7 +71,7 @@ public:
 
 			case OP_NEXT_SEC:
 			case OP_PREV_SEC:
-//				lastOP = 0;
+				//				lastOP = 0;
 				curSec = 0;
 				curPg = 0;
 				display();
@@ -92,6 +92,9 @@ public:
 			if (needRefresh) {
 				needRefresh = false;
 				epd.startRefresh();
+
+				eeprom_update_word(EEPROM_ADDR_SEC, curSec);
+				eeprom_update_word(EEPROM_ADDR_PG, curPg);
 			}
 		}
 	}

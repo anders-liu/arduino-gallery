@@ -8,4 +8,5 @@
 #define PIN_EPD_RST   ((uint8_t)4)
 #define PIN_EPD_WKUP  ((uint8_t)5)
 
-
+#define EEPROM_ADDR_SEC ((uint16_t *)0)
+#define EEPROM_ADDR_PG  ((uint16_t *)2)

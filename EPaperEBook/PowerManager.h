@@ -49,9 +49,11 @@ public:
 				enterSleepHandler();
 			}
 
-			bitSet(EIMSK, INT3);
+			bitSet(EIMSK, INT0);
+			bitSet(EIMSK, INT1);
 			sleep_mode();
-			bitClear(EIMSK, INT3);
+			bitClear(EIMSK, INT1);
+			bitClear(EIMSK, INT0);
 			refresh();
 
 			if (exitSleepHandler) {
