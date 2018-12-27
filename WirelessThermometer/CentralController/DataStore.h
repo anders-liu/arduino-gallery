@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#define MAX_CHANNELS 5  // 1 centrol + 4 remotes
+#define MAX_CHANNELS 6  // 1 centrol + 5 remotes
 
 #define CS_OK ((uint8_t)0)
 #define CS_NO_SIGNAL ((uint8_t)1)
@@ -21,7 +21,8 @@
 #define UI_STAGE_1 ((uint8_t)0x01)  // Show remote B, room 1.
 #define UI_STAGE_2 ((uint8_t)0x02)  // Show remote C, room 2.
 #define UI_STAGE_3 ((uint8_t)0x03)  // Show remote D, room 3.
-#define UI_STAGE_MAX UI_STAGE_3
+#define UI_STAGE_4 ((uint8_t)0x04)  // Show remote E, light switch.
+#define UI_STAGE_MAX UI_STAGE_4
 
 #define UI_RTC_EDT_NONE    ((uint8_t)0x00)  // Editing target: none.
 #define UI_RTC_EDT_YEAR    ((uint8_t)0x01)  // Editing target: year.

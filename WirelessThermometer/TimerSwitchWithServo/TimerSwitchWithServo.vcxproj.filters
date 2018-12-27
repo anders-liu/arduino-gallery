@@ -33,6 +33,12 @@
     <ClInclude Include="ServoMotion.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\CentralController\WirelessMessage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Wireless.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -45,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ServoMotion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Wireless.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

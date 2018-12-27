@@ -7,7 +7,7 @@
 #include "WirelessMessage.h"
 #include "DataStore.h"
 
-#define WL_MAX_REMOTE 4
+#define WL_MAX_REMOTE 5
 #define WL_ADDR_WIDTH 5
 
 class Wireless {

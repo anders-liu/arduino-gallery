@@ -5,6 +5,9 @@
 
 #define CUSTOM_CHAR_ID_DEGC ((uint8_t)1)
 #define CUSTOM_CHAR_ID_DEGF ((uint8_t)2)
+#define CUSTOM_CHAR_ID_ERR  ((uint8_t)3)
+#define CUSTOM_CHAR_ID_LTON ((uint8_t)4)
+#define CUSTOM_CHAR_ID_LTOF ((uint8_t)5)
 
 static uint8_t getChannelThemometerRow(uint8_t channel) {
 	switch (channel) {
@@ -13,6 +16,18 @@ static uint8_t getChannelThemometerRow(uint8_t channel) {
 	case 2:
 	case 3:
 	case 4: return 2;
+	default: return -1;
+	}
+}
+
+static uint8_t getChannelErrorRow(uint8_t channel) {
+	switch (channel) {
+	case 0: return 0;
+	case 1: return 3;
+	case 2:
+	case 3:
+	case 4: return 2;
+	case 5: return 3;
 	default: return -1;
 	}
 }
@@ -30,7 +45,14 @@ void UI::setup() {
 	lcd.createChar(CUSTOM_CHAR_ID_DEGF, ccDegF);
 
 	uint8_t ccErr[] = { 0x1F, 0x00, 0x1F, 0x00, 0x1F, 0x00, 0x1F, 0x00 };
-	lcd.createChar(3, ccErr);
+	lcd.createChar(CUSTOM_CHAR_ID_ERR, ccErr);
+
+	uint8_t ccLightOn[] = { 0x04, 0x04, 0x0E, 0x0E, 0x1F, 0x00, 0x15, 0x15 };
+	lcd.createChar(CUSTOM_CHAR_ID_LTON, ccLightOn);
+
+	uint8_t ccLightOff[] = { 0x04, 0x04, 0x0E, 0x0E, 0x1F, 0x00, 0x00, 0x00 };
+	lcd.createChar(CUSTOM_CHAR_ID_LTOF, ccLightOff);
+
 
 	// Force an update.
 	for (uint8_t i = 0; i < MAX_CHANNELS; i++) {
@@ -43,6 +65,7 @@ void UI::setup() {
 void UI::loop() {
 	loopChannelThemometerData(0, false);
 	loopChannelUpdateAnimation(0);
+	loopChannelError(0, false);
 
 	bool forceUpate = ds.f.uiStageChanged;
 	if (ds.f.uiStageChanged) {
@@ -60,21 +83,32 @@ void UI::loop() {
 		loopChannelUpdateAnimation(1);
 		loopRtcData(forceUpate);
 		loopRtcAnimation();
+		loopChannelError(1, forceUpate);
 		break;
 	case UI_STAGE_1:
 		loopChannelThemometerData(2, forceUpate);
 		loopChannelUpdateAnimation(2);
 		loopChannelLightData(2, forceUpate);
+		loopChannelError(2, forceUpate);
 		break;
 	case UI_STAGE_2:
 		loopChannelThemometerData(3, forceUpate);
 		loopChannelUpdateAnimation(3);
 		loopChannelLightData(3, forceUpate);
+		loopChannelError(3, forceUpate);
 		break;
 	case UI_STAGE_3:
 		loopChannelThemometerData(4, forceUpate);
 		loopChannelUpdateAnimation(4);
 		loopChannelLightData(4, forceUpate);
+		loopChannelError(4, forceUpate);
+		break;
+	case UI_STAGE_4:
+		loopChannelUpdateAnimation(5);
+		loopRtcData(forceUpate);
+		loopRtcAnimation();
+		loopChannelLightData(5, forceUpate);
+		loopChannelError(5, forceUpate);
 		break;
 	}
 }
@@ -84,24 +118,9 @@ void UI::loopChannelThemometerData(uint8_t channel, bool forceUpdate) {
 	uint8_t row = getChannelThemometerRow(channel);
 
 	if (cd.f.statusReadyToShow || forceUpdate) {
-		cd.f.statusReadyToShow = 0;
-
 		clearRow(row);
-
-		switch (cd.status) {
-		case CS_OK:
+		if (cd.status == CS_OK) {
 			writeUnit(row);
-			break;
-
-		case CS_SENSOR_ERROR:
-			lcd.setCursor(1, row);
-			lcd.print(" \x03 SENSOR ERROR \x03");
-			break;
-
-		case CS_NO_SIGNAL:
-			lcd.setCursor(1, row);
-			lcd.print("  \x03 NO SIGNAL \x03");
-			break;
 		}
 	}
 
@@ -141,6 +160,7 @@ void UI::loopChannelUpdateAnimation(uint8_t channel) {
 
 void UI::loopChannelLightData(uint8_t channel, bool forceUpdate) {
 	ChannelData &cd = ds.cd[channel];
+	bool isRemoteLight = channel == 5;
 
 	if (cd.f.lightStatusReadyToShow || forceUpdate) {
 		forceUpdate = cd.lightStatus == CS_LIGHT_OK;
@@ -151,13 +171,14 @@ void UI::loopChannelLightData(uint8_t channel, bool forceUpdate) {
 		cd.f.lightStatusReadyToShow = 0;
 		if (cd.f.lightPowerReadyToShow || forceUpdate) {
 			cd.f.lightPowerReadyToShow = 0;
-			lcd.setCursor(0, 3);
-			lcd.print("Light is ");
-			if (cd.lightIsOn) {
-				lcd.print("ON. ");
+			lcd.setCursor(isRemoteLight ? 2 : 0, 3);
+
+			if (!isRemoteLight) {
+				lcd.print("Light is ");
+				lcd.print(cd.lightIsOn ? "ON. " : "OFF.");
 			}
 			else {
-				lcd.print("OFF.");
+				lcd.print(cd.lightIsOn ? "\x04ON" : "OFF");
 			}
 		}
 		if (cd.f.lightLevelReadyToShow || forceUpdate) {
@@ -167,6 +188,39 @@ void UI::loopChannelLightData(uint8_t channel, bool forceUpdate) {
 			lcd.setCursor(16, 3);
 			lcd.print(str);
 			lcd.print("%");
+		}
+	}
+	else {
+		clearRow(3);
+	}
+}
+
+void UI::loopChannelError(uint8_t channel, bool forceUpdate) {
+	ChannelData &cd = ds.cd[channel];
+
+	if (cd.f.statusReadyToShow || forceUpdate) {
+		cd.f.statusReadyToShow = 0;
+
+		if (cd.status != CS_OK) {
+			uint8_t row = getChannelErrorRow(channel);
+			clearRow(row);
+
+			switch (cd.status) {
+			case CS_SENSOR_ERROR:
+				lcd.setCursor(1, row);
+				lcd.print(" \x03 SENSOR ERROR \x03");
+				break;
+
+			case CS_NO_SIGNAL:
+				lcd.setCursor(1, row);
+				lcd.print("  \x03 NO SIGNAL \x03");
+				break;
+
+			default:
+				lcd.setCursor(1, row);
+				lcd.print(" \x03 UNKNOWN ERROR \x03");
+				break;
+			}
 		}
 	}
 }
@@ -381,6 +435,10 @@ void UI::writeRemoteTitle() {
 	case UI_STAGE_3:
 		lcd.setCursor(4, 1);
 		lcd.print("[ Room 3 ]");
+		break;
+	case UI_STAGE_4:
+		lcd.setCursor(2, 2);
+		lcd.print("[ Remote Light ]");
 		break;
 	}
 }

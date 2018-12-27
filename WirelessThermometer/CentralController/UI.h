@@ -23,6 +23,7 @@ private:
 	void loopChannelThemometerData(uint8_t channel, bool forceUpdate);
 	void loopChannelUpdateAnimation(uint8_t channel);
 	void loopChannelLightData(uint8_t channel, bool forceUpdate);
+	void loopChannelError(uint8_t channel, bool forceUpdate);
 	void loopRtcData(bool forceUpdate);
 	void loopRtcAnimation();
 

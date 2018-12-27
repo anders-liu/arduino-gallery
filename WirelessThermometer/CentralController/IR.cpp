@@ -70,7 +70,7 @@ void IR::onKeyDown(IRKey key) {
 		switch (ds.uiStage) {
 		case UI_STAGE_0:
 			if (ds.rtcEditingTarget == UI_RTC_EDT_NONE) {
-				ds.setUIStage(UI_STAGE_3);
+				ds.setUIStage(UI_STAGE_4);
 			}
 			else {
 				switchRtcEditingDec();
@@ -79,6 +79,7 @@ void IR::onKeyDown(IRKey key) {
 		case UI_STAGE_1: ds.setUIStage(UI_STAGE_0); break;
 		case UI_STAGE_2: ds.setUIStage(UI_STAGE_1); break;
 		case UI_STAGE_3: ds.setUIStage(UI_STAGE_2); break;
+		case UI_STAGE_4: ds.setUIStage(UI_STAGE_3); break;
 		}
 		break;
 	case IRKEY_RIGHT:
@@ -93,7 +94,8 @@ void IR::onKeyDown(IRKey key) {
 			break;
 		case UI_STAGE_1: ds.setUIStage(UI_STAGE_2); break;
 		case UI_STAGE_2: ds.setUIStage(UI_STAGE_3); break;
-		case UI_STAGE_3: ds.setUIStage(UI_STAGE_0); break;
+		case UI_STAGE_3: ds.setUIStage(UI_STAGE_4); break;
+		case UI_STAGE_4: ds.setUIStage(UI_STAGE_0); break;
 		}
 		break;
 	case IRKEY_UP:
@@ -118,6 +120,7 @@ void IR::onKeyDown(IRKey key) {
 		case UI_STAGE_1: lightControlSwitchPower(2); break;
 		case UI_STAGE_2: lightControlSwitchPower(3); break;
 		case UI_STAGE_3: lightControlSwitchPower(4); break;
+		case UI_STAGE_4: lightControlSwitchPower(5); break;
 		}
 		break;
 	case IRKEY_A:

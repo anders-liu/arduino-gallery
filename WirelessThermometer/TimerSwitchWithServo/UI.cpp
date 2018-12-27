@@ -50,25 +50,36 @@ static void s_printCalibrateOnValue(LiquidCrystal_I2C &lcd, uint8_t v) {
 	s_printInt(lcd, v);
 }
 
-void UI::setup() {
+void UI::setup(bool isCalibarator) {
 	pinMode(this->powerLedPin, OUTPUT);
-	s_rxtx.rxOff();
-	s_rxtx.txOff();
 
-	this->lcd.init();
-	this->lcd.backlight();
-}
-
-void UI::loop() {
-	if (ds.getUiStageChanged()) {
-		this->loopUIStageChanged();
-		ds.clearUiStageChanged();
+	if (isCalibarator) {
+		s_rxtx.rxOn();
+		s_rxtx.txOn();
 	}
 	else {
-		switch (ds.getUiStage()) {
-		case UI_STAGE_RUNNING:             this->loopRunning();           break;
-		case UI_STAGE_CALIBRATE_OFF_VALUE: this->loopCalibrateOffValue(); break;
-		case UI_STAGE_CALIBRATE_ON_VALUE:  this->loopCalibrateOnValue();  break;
+		s_rxtx.rxOff();
+		s_rxtx.txOff();
+	}
+
+	if (isCalibarator) {
+		this->lcd.init();
+		this->lcd.backlight();
+	}
+}
+
+void UI::loop(bool isCalibarator) {
+	if (isCalibarator) {
+		if (ds.getUiStageChanged()) {
+			this->loopUIStageChanged();
+			ds.clearUiStageChanged();
+		}
+		else {
+			switch (ds.getUiStage()) {
+			case UI_STAGE_RUNNING:             this->loopRunning();           break;
+			case UI_STAGE_CALIBRATE_OFF_VALUE: this->loopCalibrateOffValue(); break;
+			case UI_STAGE_CALIBRATE_ON_VALUE:  this->loopCalibrateOnValue();  break;
+			}
 		}
 	}
 
@@ -79,12 +90,19 @@ void UI::loop() {
 }
 
 void UI::loopUIStageChanged() {
-	this->lcd.clear();
+	//this->lcd.clear();  // Conflicts with RF24, don't know why.
+	this->lcd.setCursor(0, 0);
+	this->lcd.print("                ");
+	this->lcd.setCursor(0, 1);
+	this->lcd.print("                ");
 	this->lcd.setCursor(0, 0);
 
 	switch (ds.getUiStage()) {
 	case UI_STAGE_RUNNING:
 		this->lcd.print("Running");
+		s_printCalibrateOnOffTitle(this->lcd);
+		s_printCalibrateOffValue(this->lcd, ds.getCalibrationOffValue());
+		s_printCalibrateOnValue(this->lcd, ds.getCalibrationOnValue());
 		break;
 
 	case UI_STAGE_CALIBRATE_OFF_VALUE:

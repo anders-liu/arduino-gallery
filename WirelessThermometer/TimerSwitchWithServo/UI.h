@@ -11,8 +11,8 @@ public:
 	UI(uint8_t lcdAddr, uint8_t powerLedPin)
 		: lcd(lcdAddr, 16, 2), powerLedPin(powerLedPin) {}
 
-	void setup();
-	void loop();
+	void setup(bool isCalibarator);
+	void loop(bool isCalibarator);
 
 private:
 	LiquidCrystal_I2C lcd;

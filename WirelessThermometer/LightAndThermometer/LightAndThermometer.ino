@@ -86,10 +86,6 @@ IrController ir(PIN_IR);
 NightLight light;
 Wireless wireless(PIN_NRF_CE, PIN_NRF_CSN, WL_CHANNEL, txPipeAddr, rxPipeAddr);
 
-#if RUN_UI_DEMO
-#include "UI_Demo.cpp"
-#endif
-
 //
 // Constants & Variables
 //

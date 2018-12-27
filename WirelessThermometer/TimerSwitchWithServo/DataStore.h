@@ -5,11 +5,16 @@
 
 #include <Arduino.h>
 
-enum UiStage_t : uint8_t
-{
+enum UiStage_t : uint8_t {
 	UI_STAGE_RUNNING,
 	UI_STAGE_CALIBRATE_OFF_VALUE,
 	UI_STAGE_CALIBRATE_ON_VALUE,
+};
+
+enum WirelessState_t : uint8_t {
+	WL_S_OK,
+	WS_S_NOSIGNAL,
+	WL_S_NOCHIP,
 };
 
 class DataStore {
@@ -59,11 +64,19 @@ public:
 		isPowerOn = v;
 		f.isPowerOnReadyToShow = 1;
 		f.isPowerOnReadyToSave = 1;
+		f.isPowerOnReadyToSend = 1;
 	}
 	bool getIsPowerOnReadyToShow() { return f.isPowerOnReadyToShow; }
 	void clearIsPowerOnReadyToShow() { f.isPowerOnReadyToShow = 0; }
 	bool getIsPowerOnReadyToSave() { return f.isPowerOnReadyToSave; }
 	void clearIsPowerOnReadyToSave() { f.isPowerOnReadyToSave = 0; }
+	bool getIsPowerOnReadyToSend() { return f.isPowerOnReadyToSend; }
+	void clearIsPowerOnReadyToSend() { f.isPowerOnReadyToSend = 0; }
+
+	WirelessState_t getWirelessState() { return wirelessState; }
+	void setWirelessState(WirelessState_t v) { wirelessState = v; f.wirelessStateReadyToShow = 1; }
+	bool getWirelessStateReadyToShow() { return f.wirelessStateReadyToShow; }
+	void clearWirelessStateReadyToShow() { f.wirelessStateReadyToShow = 0; }
 
 private:
 	UiStage_t uiStage = UI_STAGE_RUNNING;
@@ -78,6 +91,8 @@ private:
 
 	bool isPowerOn = false;
 
+	WirelessState_t wirelessState = WL_S_OK;
+
 	struct {
 		uint8_t uiStageChanged : 1;
 		uint8_t calibrateOffValueReadyToShow : 1;
@@ -88,6 +103,8 @@ private:
 		uint8_t currentServoValueReadyToSave : 1;
 		uint8_t isPowerOnReadyToShow : 1;
 		uint8_t isPowerOnReadyToSave : 1;
+		uint8_t isPowerOnReadyToSend : 1;
+		uint8_t wirelessStateReadyToShow : 1;
 	} f = { 0 };
 };
 

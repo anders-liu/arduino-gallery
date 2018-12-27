@@ -51,6 +51,7 @@ static const byte txPipeAddrs[WL_MAX_REMOTE][WL_ADDR_WIDTH] = {
 	{ 0x66, 0xDB, 0xBD, 0xEC, 0xCE },  // For remmote B, room 1.
 	{ 0x3C, 0xDB, 0xBD, 0xEC, 0xCE },  // For remmote C, room 2.
 	{ 0x99, 0xDB, 0xBD, 0xEC, 0xCE },  // For remmote D, room 3.
+	{ 0xB5, 0xDB, 0xBD, 0xEC, 0xCE },  // For remmote E, light switch.
 };
 
 static const byte rxPipeAddrs[WL_MAX_REMOTE][WL_ADDR_WIDTH] = {
@@ -58,6 +59,7 @@ static const byte rxPipeAddrs[WL_MAX_REMOTE][WL_ADDR_WIDTH] = {
 	{ 0x66, 0xCE, 0xEC, 0xBD, 0xDB },  // For remmote B, room 1.
 	{ 0x3C, 0xCE, 0xEC, 0xBD, 0xDB },  // For remmote C, room 2.
 	{ 0x99, 0xCE, 0xEC, 0xBD, 0xDB },  // For remmote D, room 3.
+	{ 0xB5, 0xCE, 0xEC, 0xBD, 0xDB },  // For remmote E, light switch.
 };
 
 //
@@ -99,6 +101,7 @@ void setup() {
 	wl.setup();
 	rtc.setup();
 
+	ds.setUIStage(UI_STAGE_4);
 #if RUN_UI_DEMO
 	UI_Demo_Setup();
 #endif
